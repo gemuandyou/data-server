@@ -4,6 +4,7 @@ import com.gemu.dataserver.core.ReadData;
 import com.gemu.dataserver.core.WriteData;
 import com.gemu.dataserver.entity.BaseData;
 import com.gemu.dataserver.entity.PreviewStory;
+import com.gemu.dataserver.entity.Story;
 import com.gemu.dataserver.entity.auxiliary.EntityPage;
 import com.gemu.dataserver.exception.DataAssetsNotFoundException;
 import com.gemu.dataserver.exception.EntityNotFoundException;
@@ -36,8 +37,12 @@ public class StoryService {
      * @return 是否创建成功
      */
     public boolean addStory(String prevImg, String prevWords, String author, String title, String subhead, Long date, String paragraph) {
+        if (prevWords == null || "".equals(prevWords)) {
+            prevWords = title;
+        }
         // 创建故事
-//        Story story = new Story(title, subhead, author, date, paragraph);
+        Story story = new Story(title, subhead, author, date, paragraph);
+        writeData.write("friends", "story", story);
         // 生成故事预览
         addPreviewStory(prevImg, prevWords, author);
         return true;

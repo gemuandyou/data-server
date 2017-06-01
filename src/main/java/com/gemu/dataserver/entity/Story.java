@@ -23,7 +23,7 @@ public class Story extends BaseData {
     /**
      * 故事日期
      */
-    private Date date;
+    private Long date;
     /**
      * 故事内容
      */
@@ -32,7 +32,7 @@ public class Story extends BaseData {
     public Story() {
     }
 
-    public Story(String title, String subhead, String author, Date date, String paragraph) {
+    public Story(String title, String subhead, String author, Long date, String paragraph) {
         this.title = title;
         this.subhead = subhead;
         this.author = author;
@@ -64,11 +64,11 @@ public class Story extends BaseData {
         this.author = author;
     }
 
-    public Date getDate() {
+    public Long getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(Long date) {
         this.date = date;
     }
 

@@ -1,15 +1,16 @@
 package com.gemu.dataserver.window;
 
 import com.gemu.dataserver.entity.auxiliary.EntityPage;
+import com.gemu.dataserver.entity.auxiliary.StorageStory;
 import com.gemu.dataserver.exception.DataAssetsNotFoundException;
 import com.gemu.dataserver.exception.EntityNotFoundException;
 import com.gemu.dataserver.exception.SourceNotFoundException;
 import com.gemu.dataserver.service.StoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Enumeration;
 
 /**
  * 故事 接口
@@ -25,19 +26,13 @@ public class StoryWin {
     /**
      * 添加故事
      *
-     * @param prevImg 故事预览图（可为空）
-     * @param prevWords 故事简介（不传值为title值）
-     * @param author 作者
-     * @param title 故事标题
-     * @param subhead 故事子标题
-     * @param date 故事日期（时间戳）
-     * @param paragraph 故事HTML内容
+     * @param storageStory
      * @return
      */
     @RequestMapping(value = "add", method = RequestMethod.POST)
-    public String addStory(String prevImg, String prevWords, String author,
-                           String title, String subhead, Long date, String paragraph) {
-        boolean success = storyService.addStory(prevImg, prevWords, author, title, subhead, date, paragraph);
+    public String addStory(@RequestBody StorageStory storageStory) {
+        boolean success = storyService.addStory(storageStory.getPrevImg(), storageStory.getPrevWords(), storageStory.getAuthor(),
+                storageStory.getTitle(), storageStory.getSubhead(), storageStory.getDate(), storageStory.getParagraph());
         return success + "";
     }
 
@@ -47,8 +42,8 @@ public class StoryWin {
      * @return
      */
     @RequestMapping(value = "getPage", method = RequestMethod.POST)
-    public String getPage(@RequestParam(required = false, defaultValue = "1") int pageNo) {
-        EntityPage page = null;
+    public Object getPage(@RequestParam(required = false, defaultValue = "1") int pageNo) {
+        EntityPage page = new EntityPage();
         try {
             page = storyService.pageStory(pageNo);
         } catch (EntityNotFoundException e) {
@@ -58,7 +53,7 @@ public class StoryWin {
         } catch (SourceNotFoundException e) {
             e.printStackTrace();
         }
-        return page.toString();
+        return page == null ? new EntityPage() : page;
     }
 
 
