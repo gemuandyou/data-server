@@ -1,6 +1,6 @@
 package com.gemu.dataserver.entity;
 
-import java.util.Date;
+import com.gemu.dataserver.annotation.NeedIndex;
 
 /**
  * 故事
@@ -11,6 +11,7 @@ public class Story extends BaseData {
     /**
      * 故事标题
      */
+    @NeedIndex
     private String title;
     /**
      * 故事副标题
@@ -19,6 +20,7 @@ public class Story extends BaseData {
     /**
      * 作者
      */
+    @NeedIndex
     private String author;
     /**
      * 故事日期

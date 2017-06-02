@@ -1,5 +1,7 @@
 package com.gemu.dataserver.entity;
 
+import com.gemu.dataserver.annotation.NeedIndex;
+
 /**
  * 故事预览
  * Created by gemu on 29/05/2017.
@@ -13,10 +15,12 @@ public class PreviewStory extends BaseData {
     /**
      * 故事简介（没指定就用故事标题）
      */
+    @NeedIndex
     private String words;
     /**
      * 作者
      */
+    @NeedIndex
     private String author;
 
     public PreviewStory() {
