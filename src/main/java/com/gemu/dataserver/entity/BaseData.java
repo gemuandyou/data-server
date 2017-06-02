@@ -1,5 +1,7 @@
 package com.gemu.dataserver.entity;
 
+import com.gemu.dataserver.annotation.NeedIndex;
+
 import java.io.Serializable;
 
 /**
@@ -8,6 +10,7 @@ import java.io.Serializable;
  */
 public class BaseData implements Serializable {
 
+    @NeedIndex
     protected String id;
 
     public String getId() {

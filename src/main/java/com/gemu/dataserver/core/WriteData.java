@@ -17,7 +17,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 写入数据
@@ -48,7 +50,7 @@ public class WriteData {
             FileWriter writer = null; // 数据写入
             FileWriter statusWriter = null; // 数据状态写入
             String entityPath = ""; // 实体对象存储路径
-            String entityOffset = ""; // 实体对象所在位置定位。格式：文件名-所在行数
+            String entityPosition = ""; // 实体对象所在位置定位。格式：文件名-所在行数
             try {
                 entityPath = dbPath +
                         (dbPath.endsWith(File.separator) ? "" : File.separator) +
@@ -64,12 +66,12 @@ public class WriteData {
                     writer = new FileWriter(entityPath + entityName + File.separator + (entityStatus.getMaxFileNum() + 1));
                     writer.append(convertLinefeedToPlaceHolder(ByteAndHexTool.bytesToHexString(SerializableTool.serialization(t))) + "\n");
                     entityStatus.setMaxFileNum(entityStatus.getMaxFileNum() + 1);
-                    entityOffset = (entityStatus.getMaxFileNum() + 1) + "-" + 1;
+                    entityPosition = (entityStatus.getMaxFileNum() + 1) + "-" + 1;
                 } else { // 在原来的存储文件上追加
                     t.setId(entityStatus.getTotalEntityCount() + "0.0" + Thread.currentThread().getId());
                     writer = new FileWriter(entityPath + entityName + File.separator + (entityStatus.getMaxFileNum()), true);
                     writer.append(convertLinefeedToPlaceHolder(ByteAndHexTool.bytesToHexString(SerializableTool.serialization(t))) + "\n");
-                    entityOffset = (entityStatus.getMaxFileNum()) + "-" + (entityStatus.getTotalEntityCount() + 1) % singleFileEntityCount;
+                    entityPosition = (entityStatus.getMaxFileNum()) + "-" + (entityStatus.getTotalEntityCount() + 1) % singleFileEntityCount;
                 }
 
                 // 修改实体状态
@@ -83,10 +85,18 @@ public class WriteData {
 
                 // 创建实体索引，用于条件查询
                 Class<? extends BaseData> clazz = t.getClass();
+                List<Field> fieldList = new ArrayList<Field>();
                 Field[] fields = clazz.getDeclaredFields();
+                for (Field field : fields) {
+                    fieldList.add(field);
+                }
+                Field[] superFields = clazz.getSuperclass().getDeclaredFields();
+                for (Field field : superFields) {
+                    fieldList.add(field);
+                }
                 Date now = new Date();
                 FileWriter indexWriter = null; // 指针写入
-                for (Field field : fields) {
+                for (Field field : fieldList) {
                     if (field.getAnnotation(NeedIndex.class) == null) {
                         continue;
                     }
@@ -98,7 +108,7 @@ public class WriteData {
                     field.setAccessible(true);
                     try {
                         indexWriter = new FileWriter(idxDir + File.separator + new SimpleDateFormat("yyyyMMdd").format(now) + ".query"); // 文件格式：fieldValue=|=10-1#fieldValue -|- 10-1
-                        indexWriter.append((field.get(t) == null ? "" : field.get(t).toString().replaceAll("\n", "")) + "=|=" + entityOffset + "#");
+                        indexWriter.append((field.get(t) == null ? "" : field.get(t).toString().replaceAll("\n", "")) + "=|=" + entityPosition + "#");
                     } catch (Exception e) {
                         e.printStackTrace();
                     } finally {
