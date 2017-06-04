@@ -61,12 +61,13 @@ public class WriteData {
                 }
                 // 根据 存储状态文件 判断当前存储对象是否需要创建文件，当单个文件满足500行的时候就需要另外创建存储文件
                 EntityStatus entityStatus = checkEntityStatus(entityPath, entityName + ".sta");
-                if (entityStatus.getTotalEntityCount() % singleFileEntityCount == 0) { // 以满足500，需要创建存储文件
+                if ((entityStatus.getTotalEntityCount() == 0 || entityStatus.getTotalEntityCount() >= singleFileEntityCount) &&
+                        entityStatus.getTotalEntityCount() % singleFileEntityCount == 0) { // 已满足500，需要创建存储文件
                     t.setId(entityStatus.getTotalEntityCount() + "0.0" + Thread.currentThread().getId());
                     writer = new FileWriter(entityPath + entityName + File.separator + (entityStatus.getMaxFileNum() + 1));
                     writer.append(convertLinefeedToPlaceHolder(ByteAndHexTool.bytesToHexString(SerializableTool.serialization(t))) + "\n");
-                    entityStatus.setMaxFileNum(entityStatus.getMaxFileNum() + 1);
                     entityPosition = (entityStatus.getMaxFileNum() + 1) + "-" + 1;
+                    entityStatus.setMaxFileNum(entityStatus.getMaxFileNum() + 1);
                 } else { // 在原来的存储文件上追加
                     t.setId(entityStatus.getTotalEntityCount() + "0.0" + Thread.currentThread().getId());
                     writer = new FileWriter(entityPath + entityName + File.separator + (entityStatus.getMaxFileNum()), true);
@@ -107,8 +108,8 @@ public class WriteData {
                     }
                     field.setAccessible(true);
                     try {
-                        indexWriter = new FileWriter(idxDir + File.separator + new SimpleDateFormat("yyyyMMdd").format(now) + ".query"); // 文件格式：fieldValue=|=10-1#fieldValue -|- 10-1
-                        indexWriter.append((field.get(t) == null ? "" : field.get(t).toString().replaceAll("\n", "")) + "=|=" + entityPosition + "#");
+                        indexWriter = new FileWriter(idxDir + File.separator + new SimpleDateFormat("yyyyMMdd").format(now) + ".query", true); // 文件格式：fieldValue=|=10-1
+                        indexWriter.append((field.get(t) == null ? "" : "`" + field.get(t).toString().replaceAll("\n", "")) + "`=|=" + entityPosition + "#");
                     } catch (Exception e) {
                         e.printStackTrace();
                     } finally {
@@ -128,7 +129,7 @@ public class WriteData {
                     e.printStackTrace();
                 }
             }
-            return null;
+            return t.getId();
         }
     }
 

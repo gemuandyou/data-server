@@ -12,6 +12,8 @@ import com.gemu.dataserver.exception.SourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 /**
  * 故事 业务
  * Created by gemu on 29/05/2017.
@@ -42,9 +44,9 @@ public class StoryService {
         }
         // 创建故事
         Story story = new Story(title, subhead, author, date, paragraph);
-        writeData.write("friends", "story", story);
+        String storyId = writeData.write("friends", "story", story);
         // 生成故事预览
-        addPreviewStory(prevImg, prevWords, author);
+        addPreviewStory(prevImg, prevWords, author, storyId);
         return true;
     }
 
@@ -53,9 +55,10 @@ public class StoryService {
      * @param prevImg 故事预览图（可为空）
      * @param prevWords 故事简介（不传值为title值）
      * @param author 作者
+     * @param storyId 故事ID
      */
-    private void addPreviewStory(String prevImg, String prevWords, String author) {
-        PreviewStory previewStory = new PreviewStory(prevImg, prevWords, author);
+    private void addPreviewStory(String prevImg, String prevWords, String author, String storyId) {
+        PreviewStory previewStory = new PreviewStory(prevImg, prevWords, author, storyId);
         writeData.write("friends","previewStory", previewStory);
     }
 
@@ -67,5 +70,33 @@ public class StoryService {
     public EntityPage pageStory(int pageNo) throws EntityNotFoundException, DataAssetsNotFoundException, SourceNotFoundException {
         EntityPage<BaseData> page = readData.read(pageNo, "friends", "previewStory");
         return page;
+    }
+
+    /**
+     * 根据条件分页获取实体对象列表
+     *
+     * @param pageNo
+     * @param filters    条件集合<br>
+     *                   <p>由 字段名 和 字段过滤条件 组成。
+     *                   字段过滤条件仅有三种形式。
+     *                   <ol>
+     *                   <li>等于。格式：string</li>
+     *                   <li>不等于。格式：!string</li>
+     *                   <li>模糊。格式：%string%</li>
+     *                   </pl></p>
+     * @return
+     */
+    public EntityPage filterPageStory(int pageNo, Map<String, String> filters) throws EntityNotFoundException, DataAssetsNotFoundException, SourceNotFoundException {
+        EntityPage<BaseData> page = readData.filterRead(pageNo, "friends", "previewStory", filters);
+        return page;
+    }
+
+    /**
+     * 根据ID获取故事
+     * @param id 故事ID
+     * @return
+     */
+    public Story getStory(String id) throws EntityNotFoundException, DataAssetsNotFoundException, SourceNotFoundException {
+        return readData.get(id, "friends", "story");
     }
 }

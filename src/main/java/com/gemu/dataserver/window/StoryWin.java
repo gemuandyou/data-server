@@ -1,16 +1,18 @@
 package com.gemu.dataserver.window;
 
+import com.gemu.dataserver.entity.Story;
 import com.gemu.dataserver.entity.auxiliary.EntityPage;
-import com.gemu.dataserver.entity.auxiliary.StorageStory;
+import com.gemu.dataserver.entity.auxiliary.param.PageStoryCondition;
+import com.gemu.dataserver.entity.auxiliary.param.StorageStory;
 import com.gemu.dataserver.exception.DataAssetsNotFoundException;
 import com.gemu.dataserver.exception.EntityNotFoundException;
 import com.gemu.dataserver.exception.SourceNotFoundException;
 import com.gemu.dataserver.service.StoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Enumeration;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 故事 接口
@@ -37,15 +39,40 @@ public class StoryWin {
     }
 
     /**
+     * 根据ID获取故事内容
+     *
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "get", method = RequestMethod.POST)
+    public Story addStory(@RequestBody String id) {
+        Story story= null;
+        try {
+            story = storyService.getStory(id);
+        } catch (EntityNotFoundException e) {
+            e.printStackTrace();
+        } catch (DataAssetsNotFoundException e) {
+            e.printStackTrace();
+        } catch (SourceNotFoundException e) {
+            e.printStackTrace();
+        }
+        return story;
+    }
+
+    /**
      * 获取故事列表
-     * @param pageNo 页码
+     * @param pageStoryCondition 页码和过滤条件
      * @return
      */
     @RequestMapping(value = "getPage", method = RequestMethod.POST)
-    public Object getPage(@RequestParam(required = false, defaultValue = "1") int pageNo) {
+    public EntityPage getPage(@RequestBody PageStoryCondition pageStoryCondition) {
         EntityPage page = new EntityPage();
         try {
-            page = storyService.pageStory(pageNo);
+            if (pageStoryCondition.getFilter() != null) {
+                page = storyService.filterPageStory(pageStoryCondition.getPageNo(), pageStoryCondition.getFilter());
+            } else {
+                page = storyService.pageStory(pageStoryCondition.getPageNo());
+            }
         } catch (EntityNotFoundException e) {
             e.printStackTrace();
         } catch (DataAssetsNotFoundException e) {
@@ -55,6 +82,5 @@ public class StoryWin {
         }
         return page == null ? new EntityPage() : page;
     }
-
 
 }

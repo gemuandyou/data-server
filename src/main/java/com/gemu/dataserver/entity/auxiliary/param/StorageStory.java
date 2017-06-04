@@ -1,4 +1,4 @@
-package com.gemu.dataserver.entity.auxiliary;
+package com.gemu.dataserver.entity.auxiliary.param;
 
 /**
  * 用户接收前端参数的类

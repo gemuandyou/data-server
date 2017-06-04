@@ -23,13 +23,27 @@ public class PreviewStory extends BaseData {
     @NeedIndex
     private String author;
 
+    /**
+     * 故事ID
+     */
+    private String storyId;
+
     public PreviewStory() {
     }
 
-    public PreviewStory(String image, String words, String author) {
+    public PreviewStory(String image, String words, String author, String storyId) {
         this.image = image;
         this.words = words;
         this.author = author;
+        this.storyId = storyId;
+    }
+
+    public String getStoryId() {
+        return storyId;
+    }
+
+    public void setStoryId(String storyId) {
+        this.storyId = storyId;
     }
 
     public String getImage() {
