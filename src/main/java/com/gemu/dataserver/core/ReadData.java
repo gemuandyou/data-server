@@ -344,13 +344,17 @@ public class ReadData {
         RandomAccessFile reader = null;
 
         Map<String, Integer> posMap = new HashMap<String, Integer>();
+        long currentNow = now.getTime();
 
         while (true) {
+            if (currentNow - now.getTime() >= 24L * 3600000 * 35) {
+                break;
+            }
             file = new File(entityPath + File.separator + "index" + File.separator + fieldName + File.separator +
                     sdf.format(now) + ".query");
             now = new Date(now.getTime() - 24 * 3600000);
             if (!file.exists()) {
-                break;
+                continue;
             }
             try {
                 reader = new RandomAccessFile(file, "r");
