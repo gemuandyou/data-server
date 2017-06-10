@@ -47,7 +47,7 @@ public class ReadData {
                 (dbPath.endsWith(File.separator) ? "" : File.separator) +
                 source + File.separator + entityName;
 
-        Map<String, Integer> posMap = getEntityPoistion(entityPath, "id", id);
+        Map<String, Integer> posMap = getEntityPosition(entityPath, "id", id);
         T t = accessEntityFile(entityPath, posMap.get("fileNum"), posMap.get("lineNum"));
         return t;
     }
@@ -258,7 +258,7 @@ public class ReadData {
                     sdf.format(now) + ".query");
             now = new Date(now.getTime() - 24 * 3600000);
             if (!file.exists()) {
-                break;
+                continue;
             }
             try {
                 reader = new RandomAccessFile(file, "r");
@@ -337,7 +337,7 @@ public class ReadData {
      * @param fieldValue
      * @return
      */
-    public Map<String, Integer> getEntityPoistion(String entityPath, String fieldName, String fieldValue) {
+    public Map<String, Integer> getEntityPosition(String entityPath, String fieldName, String fieldValue) {
         Date now = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         File file = null;
