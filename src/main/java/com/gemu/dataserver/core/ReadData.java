@@ -201,7 +201,12 @@ public class ReadData {
             LineNumberReader lineNumberReader = new LineNumberReader(new FileReader(
                     new File(entityPath + File.separator + fileNum)));
             T t = null;
+            int performanceCount = singleFileEntityCount * 2;
             while (true) {
+                if (performanceCount <= 0) {
+                    break;
+                }
+                performanceCount--;
                 String entity = lineNumberReader.readLine();
                 if (lineNumberReader.getLineNumber() == lineNum) {
                     t = (T) SerializableTool.deserialization(ByteAndHexTool.hexStringToBytes(convertPlaceHolderToLinefeed(entity)));
@@ -256,7 +261,12 @@ public class ReadData {
         File indexDir = new File(entityPath + File.separator + "index" + File.separator + fieldName);
         int fileCount = indexDir.list().length;
 
+        int performanceCount = singleFileEntityCount * 2;
         while (true) {
+            if (performanceCount <= 0) {
+                break;
+            }
+            performanceCount--;
             if (fileCount <= 0) break;
             file = new File(indexDir + File.separator +
                     sdf.format(now) + ".query");
@@ -352,7 +362,12 @@ public class ReadData {
         File indexDir = new File(entityPath + File.separator + "index" + File.separator + fieldName);
         int fileCount = indexDir.list().length;
 
+        int performanceCount = singleFileEntityCount * 2;
         while (true) {
+            if (performanceCount <= 0) {
+                break;
+            }
+            performanceCount--;
             if (fileCount <= 0) break;
             file = new File(entityPath + File.separator + "index" + File.separator + fieldName + File.separator +
                     sdf.format(now) + ".query");
@@ -417,7 +432,13 @@ public class ReadData {
      */
     private StringBuffer parsePositionByIndex(RandomAccessFile reader) throws IOException {
         StringBuffer groupInfo = new StringBuffer();
+
+        int performanceCount = singleFileEntityCount * 2;
         while (true) {
+            if (performanceCount <= 0) {
+                break;
+            }
+            performanceCount--;
             char c1 = (char) reader.read();
             if (c1 == '#' || reader.getFilePointer() == 1L) {
                 reader.seek(reader.getFilePointer() - 1);
@@ -447,7 +468,13 @@ public class ReadData {
         try {
             reader = new FileReader(entityFile);
             LineNumberReader br = new LineNumberReader(reader);
+
+            int performanceCount = singleFileEntityCount * 2;
             while (true) {
+                if (performanceCount <= 0) {
+                    break;
+                }
+                performanceCount--;
                 if (br.getLineNumber() < singleEndIndex) {
                     br.readLine();
                     continue;
