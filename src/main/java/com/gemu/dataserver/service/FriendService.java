@@ -45,9 +45,13 @@ public class FriendService {
             Friend friend = (Friend) data.getEntries().get(0);
             String userName = friend.getUserName();
             String password = friend.getPassword();
+            if (!password.equals(passcode)) {
+                return odAndFriend;
+            }
             MessageDigest md5 = MessageDigest.getInstance("MD5");
             BASE64Encoder base64Encoder = new BASE64Encoder();
             odAndFriend.put("OD", base64Encoder.encode(md5.digest((userName + ":" + password).getBytes())));
+            friend.setPassword("");
             odAndFriend.put("friend", friend);
         }
         return odAndFriend;
