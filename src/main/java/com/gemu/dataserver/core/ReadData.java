@@ -253,13 +253,18 @@ public class ReadData {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         File file = null;
         RandomAccessFile reader = null;
+        File indexDir = new File(entityPath + File.separator + "index" + File.separator + fieldName);
+        int fileCount = indexDir.list().length;
+
         while (true) {
-            file = new File(entityPath + File.separator + "index" + File.separator + fieldName + File.separator +
+            if (fileCount <= 0) break;
+            file = new File(indexDir + File.separator +
                     sdf.format(now) + ".query");
             now = new Date(now.getTime() - 24 * 3600000);
             if (!file.exists()) {
                 continue;
             }
+            fileCount--;
             try {
                 reader = new RandomAccessFile(file, "r");
                 reader.seek(reader.length() - 1);
