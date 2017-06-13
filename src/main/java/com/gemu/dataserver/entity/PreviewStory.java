@@ -26,6 +26,7 @@ public class PreviewStory extends BaseData {
     /**
      * 故事ID
      */
+    @NeedIndex
     private String storyId;
 
     public PreviewStory() {

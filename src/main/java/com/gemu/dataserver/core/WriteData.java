@@ -152,7 +152,7 @@ public class WriteData {
      * @param string
      * @param
      */
-    private String convertLinefeedToPlaceHolder(String string) {
+    String convertLinefeedToPlaceHolder(String string) {
         return string.replaceAll("\\n", "`linenew`");
     }
 

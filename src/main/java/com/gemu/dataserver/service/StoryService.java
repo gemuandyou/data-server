@@ -1,17 +1,20 @@
 package com.gemu.dataserver.service;
 
+import com.gemu.dataserver.core.ModifyData;
 import com.gemu.dataserver.core.ReadData;
 import com.gemu.dataserver.core.WriteData;
 import com.gemu.dataserver.entity.BaseData;
 import com.gemu.dataserver.entity.PreviewStory;
 import com.gemu.dataserver.entity.Story;
 import com.gemu.dataserver.entity.auxiliary.EntityPage;
+import com.gemu.dataserver.entity.auxiliary.param.StorageStory;
 import com.gemu.dataserver.exception.DataAssetsNotFoundException;
 import com.gemu.dataserver.exception.EntityNotFoundException;
 import com.gemu.dataserver.exception.SourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -25,6 +28,8 @@ public class StoryService {
     WriteData writeData;
     @Autowired
     ReadData readData;
+    @Autowired
+    ModifyData modifyData;
 
     /**
      * 创建故事
@@ -98,5 +103,44 @@ public class StoryService {
      */
     public Story getStory(String id) throws EntityNotFoundException, DataAssetsNotFoundException, SourceNotFoundException {
         return readData.get(id, "friends", "story");
+    }
+
+    /**
+     * 更新故事
+     * @param id
+     * @param storageStory
+     * @return
+     * @throws SourceNotFoundException
+     * @throws EntityNotFoundException
+     * @throws DataAssetsNotFoundException
+     * @throws NoSuchFieldException
+     */
+    public boolean update(String id, StorageStory storageStory)
+            throws SourceNotFoundException, EntityNotFoundException, DataAssetsNotFoundException, NoSuchFieldException {
+        Map<String, Object> storyMap = new HashMap<String, Object>();
+        if (storageStory.getTitle() != null) {
+            storyMap.put("title", storageStory.getTitle());
+        }
+        if (storageStory.getSubhead() != null) {
+            storyMap.put("subhead", storageStory.getSubhead());
+        }
+        if (storageStory.getParagraph() != null) {
+            storyMap.put("paragraph", storageStory.getParagraph());
+        }
+        boolean success = modifyData.update("friends", "story", id, Story.class, storyMap);
+        if (!success) return false;
+        PreviewStory preStory = readData.getByField("storyId", id, "friends", "previewStory");
+        if (preStory == null) {
+            return false; // TODO 事务回滚
+        }
+        Map<String, Object> prevStoryMap = new HashMap<String, Object>();
+        if (storageStory.getPrevImg() != null) {
+            prevStoryMap.put("image", storageStory.getPrevImg());
+        }
+        if (storageStory.getPrevWords() != null) {
+            prevStoryMap.put("words", storageStory.getPrevWords());
+        }
+        boolean previewSuccess = modifyData.update("friends", "previewStory", id, PreviewStory.class, prevStoryMap);
+        return previewSuccess && success;
     }
 }

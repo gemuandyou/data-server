@@ -32,8 +32,9 @@ public class ReadData {
 
     /**
      * 根据ID获取实体对象
-     * @param id 实体对象ID
-     * @param source 实体对象来源
+     *
+     * @param id         实体对象ID
+     * @param source     实体对象来源
      * @param entityName 实体对象名
      * @param <T>
      * @return
@@ -48,6 +49,30 @@ public class ReadData {
                 source + File.separator + entityName;
 
         Map<String, Integer> posMap = getEntityPosition(entityPath, "id", id);
+        T t = accessEntityFile(entityPath, posMap.get("fileNum"), posMap.get("lineNum"));
+        return t;
+    }
+
+    /**
+     * 根据字段获取实体对象
+     *
+     * @param fieldName  实体字段名
+     * @param fieldValue 实体字段值
+     * @param source     实体对象来源
+     * @param entityName 实体对象名
+     * @param <T>
+     * @return
+     */
+    public <T extends BaseData> T getByField(String fieldName, String fieldValue, String source, String entityName)
+            throws SourceNotFoundException, EntityNotFoundException, DataAssetsNotFoundException {
+        if (source == null || "".equals(source)) throw new SourceNotFoundException("实体来源不存在");
+        if (entityName == null || "".equals(entityName)) throw new EntityNotFoundException("实体不存在");
+
+        String entityPath = dbPath +
+                (dbPath.endsWith(File.separator) ? "" : File.separator) +
+                source + File.separator + entityName;
+
+        Map<String, Integer> posMap = getEntityPosition(entityPath, fieldName, fieldValue);
         T t = accessEntityFile(entityPath, posMap.get("fileNum"), posMap.get("lineNum"));
         return t;
     }
@@ -194,7 +219,8 @@ public class ReadData {
      * @param <T>        实体类型
      * @param entityPath 实体对象存储的路径
      * @param fileNum    文件序号
-     * @param lineNum    实体对象所在行   @return 实体对象
+     * @param lineNum    实体对象所在行
+     * @return 实体对象
      */
     private <T extends BaseData> T accessEntityFile(String entityPath, Integer fileNum, Integer lineNum) {
         try {
@@ -347,12 +373,13 @@ public class ReadData {
 
     /**
      * 根据索引字段名和值获取实体位置信息
+     *
      * @param entityPath
      * @param fieldName
      * @param fieldValue
-     * @return
+     * @return {fileNum:n, lineNum:n}, size为0表示不存在
      */
-    public Map<String, Integer> getEntityPosition(String entityPath, String fieldName, String fieldValue) {
+    Map<String, Integer> getEntityPosition(String entityPath, String fieldName, String fieldValue) {
         Date now = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         File file = null;
@@ -360,6 +387,8 @@ public class ReadData {
 
         Map<String, Integer> posMap = new HashMap<String, Integer>();
         File indexDir = new File(entityPath + File.separator + "index" + File.separator + fieldName);
+        if (!indexDir.exists())
+            return posMap;
         int fileCount = indexDir.list().length;
 
         int performanceCount = singleFileEntityCount * 2;
@@ -426,6 +455,7 @@ public class ReadData {
 
     /**
      * 通过索引解析出实体位置信息
+     *
      * @param reader
      * @return
      * @throws IOException
@@ -545,7 +575,7 @@ public class ReadData {
      * @param string
      * @param
      */
-    private String convertPlaceHolderToLinefeed(String string) {
+    public String convertPlaceHolderToLinefeed(String string) {
         return string.replaceAll("`linenew`", "\n");
     }
 

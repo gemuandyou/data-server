@@ -9,10 +9,14 @@ import com.gemu.dataserver.exception.EntityNotFoundException;
 import com.gemu.dataserver.exception.SourceNotFoundException;
 import com.gemu.dataserver.service.StoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 故事 接口
@@ -45,7 +49,7 @@ public class StoryWin {
      * @return
      */
     @RequestMapping(value = "get", method = RequestMethod.POST)
-    public Story addStory(@RequestBody String id) {
+    public Story get(@RequestBody String id) {
         Story story= null;
         try {
             story = storyService.getStory(id);
@@ -81,6 +85,27 @@ public class StoryWin {
             e.printStackTrace();
         }
         return page == null ? new EntityPage() : page;
+    }
+
+    /**
+     * 更新故事
+     * @param storageStory
+     * @return
+     */
+    @RequestMapping(value = "update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public boolean update(@RequestBody StorageStory storageStory) {
+        try {
+            return storyService.update(storageStory.getId(), storageStory);
+        } catch (SourceNotFoundException e) {
+            e.printStackTrace();
+        } catch (EntityNotFoundException e) {
+            e.printStackTrace();
+        } catch (DataAssetsNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 }

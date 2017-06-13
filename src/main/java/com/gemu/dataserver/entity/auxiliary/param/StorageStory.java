@@ -9,6 +9,10 @@ package com.gemu.dataserver.entity.auxiliary.param;
 public class StorageStory {
 
     /**
+     * 故事ID
+     */
+    private String id;
+    /**
      * 故事预览图（可为空）
      */
     private String prevImg;
@@ -36,6 +40,14 @@ public class StorageStory {
      * 故事HTML内容
      */
     private String paragraph;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getPrevImg() {
         return prevImg;
