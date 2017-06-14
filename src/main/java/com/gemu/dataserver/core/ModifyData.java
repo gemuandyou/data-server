@@ -110,7 +110,6 @@ public class ModifyData {
                 }
             }
             bw.append(writeData.convertLinefeedToPlaceHolder(ByteAndHexTool.bytesToHexString(SerializableTool.serialization(t))) + "\n");
-            br.readLine();
             // 暂存被修改对象之后的记录
             while ((buff = br.readLine()) != null) {
                 line++;
