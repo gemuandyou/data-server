@@ -104,7 +104,7 @@ public class ModifyData {
             while ((buff = br.readLine()) != null) {
                 if (line >= lineNum) break;
                 line++;
-                bw.append(buff);
+                bw.append(buff + "\n");
                 if (line % 100 == 0) {
                     bw.flush();
                 }
@@ -114,7 +114,7 @@ public class ModifyData {
             // 暂存被修改对象之后的记录
             while ((buff = br.readLine()) != null) {
                 line++;
-                bw.append(buff);
+                bw.append(buff + "\n");
                 if (line % 100 == 0) {
                     bw.flush();
                 }
