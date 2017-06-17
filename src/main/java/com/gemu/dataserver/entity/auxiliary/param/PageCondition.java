@@ -6,7 +6,7 @@ import java.util.Map;
  * 获取故事列表过滤条件
  * Created by gemu on 03/06/2017.
  */
-public class PageStoryCondition {
+public class PageCondition {
 
     private int pageNo;
 
