@@ -1,7 +1,6 @@
 package com.gemu.dataserver.core;
 
 import com.gemu.dataserver.entity.BaseData;
-import com.gemu.dataserver.entity.auxiliary.EntityPage;
 import com.gemu.dataserver.exception.DataAssetsNotFoundException;
 import com.gemu.dataserver.exception.EntityNotFoundException;
 import com.gemu.dataserver.exception.SourceNotFoundException;
@@ -11,9 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.LineNumberReader;
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -45,6 +50,7 @@ public class ModifyData {
     public <T extends BaseData> boolean update(String source, String entityName, String id, Class<T> tClass, Map<String, Object> fieldMap) throws NoSuchFieldException, EntityNotFoundException, DataAssetsNotFoundException, SourceNotFoundException {
         fieldMap.remove("id");
         T t = readData.get(id, source, entityName);
+        if (t == null) return false;
         // 赋值新字段
         for (Map.Entry<String, Object> entry : fieldMap.entrySet()) {
             Field fields = tClass.getDeclaredField(entry.getKey());
@@ -60,6 +66,7 @@ public class ModifyData {
                 (dbPath.endsWith(File.separator) ? "" : File.separator) +
                 source + File.separator + entityName;
         Map<String, Integer> entityPosition = readData.getEntityPosition(entityPath, "id", id);
+        if (entityPosition.size() <= 0) return false;
         return modify(entityPath, entityPosition.get("fileNum"), entityPosition.get("lineNum"), t);
     }
 
@@ -77,6 +84,7 @@ public class ModifyData {
                 (dbPath.endsWith(File.separator) ? "" : File.separator) +
                 source + File.separator + entityName;
         Map<String, Integer> entityPosition = readData.getEntityPosition(entityPath, "id", t.getId());
+        if (entityPosition.size() <= 0) return false;
         return modify(entityPath, entityPosition.get("fileNum"), entityPosition.get("lineNum"), t);
     }
 

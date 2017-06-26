@@ -49,6 +49,7 @@ public class ReadData {
                 source + File.separator + entityName;
 
         Map<String, Integer> posMap = getEntityPosition(entityPath, "id", id);
+        if (posMap.size() <= 0) return null;
         T t = accessEntityFile(entityPath, posMap.get("fileNum"), posMap.get("lineNum"));
         return t;
     }
@@ -447,8 +448,6 @@ public class ReadData {
                     e.printStackTrace();
                 }
             }
-            if (posMap.size() != 0)
-                break;
         }
         return posMap;
     }

@@ -1,5 +1,6 @@
 package com.gemu.dataserver.service;
 
+import com.gemu.dataserver.core.ModifyData;
 import com.gemu.dataserver.core.ReadData;
 import com.gemu.dataserver.core.WriteData;
 import com.gemu.dataserver.entity.BaseData;
@@ -14,6 +15,7 @@ import sun.misc.BASE64Encoder;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +30,8 @@ public class FriendService {
     WriteData writeData;
     @Autowired
     ReadData readData;
+    @Autowired
+    ModifyData modifyData;
 
     /**
      * 登陆
@@ -53,6 +57,15 @@ public class FriendService {
             odAndFriend.put("OD", base64Encoder.encode(md5.digest((userName + ":" + password).getBytes())));
             friend.setPassword("");
             odAndFriend.put("friend", friend);
+            // 更新最后一次登录时间
+            String id = friend.getId();
+            friend = new Friend();
+            friend.setLastLoginTime(new Date().getTime());
+            try {
+                updFriend(id, friend);
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            }
         }
         return odAndFriend;
     }
@@ -63,5 +76,37 @@ public class FriendService {
      */
     public void addFriend(Friend friend) {
         writeData.write("friends", "friend", friend);
+    }
+
+    /**
+     * 修改用户
+     * @param friendId
+     * @param friend
+     */
+    public boolean updFriend(String friendId, Friend friend) throws SourceNotFoundException, EntityNotFoundException, DataAssetsNotFoundException, NoSuchFieldException {
+        Map<String, Object> friendMap = new HashMap<String, Object>();
+        if (friend.getAge() != null) {
+            friendMap.put("age", friend.getAge());
+        }
+        if (friend.getUserName() != null && !"".equals(friend.getUserName())) {
+            friendMap.put("userName", friend.getUserName());
+        }
+        if (friend.getRealName() != null && !"".equals(friend.getRealName())) {
+            friendMap.put("realName", friend.getRealName());
+        }
+        if (friend.getPassword() != null && !"".equals(friend.getPassword())) {
+            friendMap.put("password", friend.getPassword());
+        }
+        boolean success = modifyData.update("friends", "friend", friendId, Friend.class, friendMap);
+        return success;
+    }
+
+    /**
+     * 获取用户
+     * @return
+     */
+    public EntityPage<BaseData> list(int pageNo) throws EntityNotFoundException, DataAssetsNotFoundException, SourceNotFoundException {
+        EntityPage<BaseData> page = readData.read(pageNo, "friends", "friend");
+        return page;
     }
 }
