@@ -45,12 +45,12 @@ public class CustomInterceptor implements HandlerInterceptor {
     }
 
     private void accessRecord(HttpServletRequest request) {
-        if (request.getRequestURI().startsWith("/visit/list/")) return;
+        if (!request.getRequestURI().startsWith("/story/getPage")) return;
         String user = request.getHeader("user");
         if (!"gemu".equals(user)) {
             Visit visit = new Visit();
             String ip = request.getRemoteAddr();
-            visit.setAddress(ip);
+            visit.setIp(ip);
             try {
                 String addresses = AddressUtils.getAddresses(ip, "utf-8");
                 visit.setAddress(addresses);
@@ -60,7 +60,7 @@ public class CustomInterceptor implements HandlerInterceptor {
             visit.setUserName(user);
             try {
                 EntityPage<BaseData> page = visitService.getVisit(visit);
-                if (page.getTotalCount() <= 0) {
+                if (page.getEntries().size() <= 0) {
                     visitService.addVisit(visit);
                 } else {
                     Visit updVisit = (Visit) page.getEntries().get(0);

@@ -56,7 +56,7 @@ public class VisitService {
         if (visit.getAddress() != null && !"".equals(visit.getAddress())) {
             visitMap.put("address", visit.getAddress());
         }
-        if (visit.getIp() != null && !"".equals(visit.getAddress())) {
+        if (visit.getIp() != null && !"".equals(visit.getIp())) {
             visitMap.put("ip", visit.getIp());
         }
         if (visit.getCount() != null) {
@@ -73,20 +73,8 @@ public class VisitService {
      */
     public EntityPage<BaseData> getVisit(Visit visit) throws EntityNotFoundException, DataAssetsNotFoundException, SourceNotFoundException {
         Map<String, String> filterMap = new HashMap<String, String>();
-        if (visit.getUserName() != null && !"".equals(visit.getUserName())) {
-            filterMap.put("userName", visit.getUserName());
-        }
-        if (visit.getAddress() != null && !"".equals(visit.getAddress())) {
-            filterMap.put("address", visit.getAddress());
-        }
         if (visit.getIp() != null && !"".equals(visit.getAddress())) {
             filterMap.put("ip", visit.getIp());
-        }
-        if (visit.getId() != null && !"".equals(visit.getId())) {
-            filterMap.put("id", visit.getId());
-        }
-        if (visit.getCount() != null) {
-            filterMap.put("count", visit.getCount() + "");
         }
         EntityPage<BaseData> entityPage = readData.filterRead(1, "friends", "visit", filterMap);
         return entityPage;

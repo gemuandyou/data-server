@@ -109,7 +109,7 @@ public class WriteData {
                     field.setAccessible(true);
                     try {
                         indexWriter = new FileWriter(idxDir + File.separator + new SimpleDateFormat("yyyyMMdd").format(now) + ".query", true); // 文件格式：fieldValue=|=10-1
-                        indexWriter.append((field.get(t) == null ? "" : "`" + field.get(t).toString().replaceAll("\n", "")) + "`=|=" + entityPosition + "#");
+                        indexWriter.append("`" + (field.get(t) == null ? "" : field.get(t).toString().replaceAll("\n", "")) + "`=|=" + entityPosition + "#");
                     } catch (Exception e) {
                         e.printStackTrace();
                     } finally {

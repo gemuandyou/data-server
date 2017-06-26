@@ -81,7 +81,7 @@ public class StoryService {
      * 根据条件分页获取实体对象列表
      *
      * @param pageNo
-     * @param filters    条件集合<br>
+     * @param filters    条件集合（目前仅支持一个条件）<br>
      *                   <p>由 字段名 和 字段过滤条件 组成。
      *                   字段过滤条件仅有三种形式。
      *                   <ol>

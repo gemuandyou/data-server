@@ -156,7 +156,7 @@ public class ReadData {
      * @param pageNo
      * @param source
      * @param entityName
-     * @param filters    条件集合<br>
+     * @param filters    条件集合（目前仅支持一个条件）<br>
      *                   <p>由 字段名 和 字段过滤条件 组成。
      *                   字段过滤条件仅有三种形式。
      *                   <ol>
@@ -200,14 +200,15 @@ public class ReadData {
         entityPage.setTotalCount(entityStatus.getTotalEntityCount());
 
         // 获取实体对象分页数据
+        // 目前只支持一个条件的查询
         List<T> ts = new ArrayList<T>();
-        for (Map.Entry<String, String> entry : filters.entrySet()) {
-            List<Map<String, Integer>> positions = getEntityPosition(pageNo, entityPath, entry.getKey(), entry.getValue());
-            for (Map<String, Integer> position : positions) {
-                T t = accessEntityFile(entityPath, position.get("fileNum"), position.get("lineNum"));
-                if (t != null) {
-                    ts.add(t);
-                }
+        Iterator<Map.Entry<String, String>> iterator = filters.entrySet().iterator();
+        Map.Entry<String, String> entry = iterator.next();
+        List<Map<String, Integer>> positions = getEntityPosition(pageNo, entityPath, entry.getKey(), entry.getValue());
+        for (Map<String, Integer> position : positions) {
+            T t = accessEntityFile(entityPath, position.get("fileNum"), position.get("lineNum"));
+            if (t != null) {
+                ts.add(t);
             }
         }
         entityPage.setEntries(ts);
@@ -469,8 +470,13 @@ public class ReadData {
             }
             performanceCount--;
             char c1 = (char) reader.read();
-            if (c1 == '#' || reader.getFilePointer() == 1L) {
+            if (c1 == '#') {
                 reader.seek(reader.getFilePointer() - 1);
+                break;
+            } else if (reader.getFilePointer() == 1L) {
+                reader.seek(reader.getFilePointer() - 1);
+                c1 = (char) reader.read();
+                groupInfo.insert(0, c1);
                 break;
             }
             groupInfo.insert(0, c1);
