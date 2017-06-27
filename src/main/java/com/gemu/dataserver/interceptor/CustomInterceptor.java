@@ -53,7 +53,7 @@ public class CustomInterceptor implements HandlerInterceptor {
             String ip = request.getRemoteAddr();
             visit.setIp(ip);
             try {
-                String addresses = AddressUtils.getAddresses(ip, "utf-8");
+                String addresses = AddressUtils.getAddresses("ip=" + ip, "utf-8");
                 visit.setAddress(addresses);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();

@@ -74,9 +74,7 @@ public class AddressUtils {
                         break;
                 }
             }
-
-            System.out.println(country+"="+area+"="+region+"="+city+"="+county+"="+isp);
-            return region;
+            return country+">"+area+">"+region+">"+city+">"+county+">"+isp;
         }
         return null;
     }
@@ -198,4 +196,9 @@ public class AddressUtils {
         }
         return outBuffer.toString();
     }
+
+//    public static void main(String[] args) throws UnsupportedEncodingException {
+//        String addresses = AddressUtils.getAddresses("ip=100.38.41.188", "utf-8");
+//        System.out.println(addresses);
+//    }
 }

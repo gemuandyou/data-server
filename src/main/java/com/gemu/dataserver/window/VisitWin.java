@@ -34,12 +34,18 @@ public class VisitWin {
     @PostMapping("")
     public void visit(HttpServletRequest request) {
         String ip = request.getHeader("Address");
+        if (ip != null) {
+            int i = ip.lastIndexOf(":");
+            if (ip.length() > i + 1) {
+                ip = ip.substring(i + 1);
+            }
+        }
         String user = request.getHeader("User");
         if (!"gemu".equals(user)) {
             Visit visit = new Visit();
             visit.setIp(ip);
             try {
-                String addresses = AddressUtils.getAddresses(ip, "utf-8");
+                String addresses = AddressUtils.getAddresses("ip=" + ip, "utf-8");
                 visit.setAddress(addresses);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -52,6 +58,9 @@ public class VisitWin {
                 } else {
                     Visit updVisit = (Visit) page.getEntries().get(0);
                     updVisit.setCount(updVisit.getCount() + 1);
+                    if (user != null && !"".equals(user)) {
+                        updVisit.setUserName(user);
+                    }
                     visitService.updVisit(updVisit.getId(), updVisit);
                 }
             } catch (EntityNotFoundException e) {
