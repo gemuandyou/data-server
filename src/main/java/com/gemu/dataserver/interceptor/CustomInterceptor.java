@@ -36,7 +36,8 @@ public class CustomInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        accessRecord(request);
+        // 前端请求使用了代理方式，所以这里获取的均是前端服务器IP
+//        accessRecord(request);
     }
 
     @Override
