@@ -4,6 +4,7 @@ import com.gemu.dataserver.core.ModifyData;
 import com.gemu.dataserver.core.ReadData;
 import com.gemu.dataserver.core.WriteData;
 import com.gemu.dataserver.entity.BaseData;
+import com.gemu.dataserver.entity.Comment;
 import com.gemu.dataserver.entity.PreviewStory;
 import com.gemu.dataserver.entity.Story;
 import com.gemu.dataserver.entity.auxiliary.EntityPage;
@@ -143,4 +144,26 @@ public class StoryService {
         boolean previewSuccess = modifyData.update("friends", "previewStory", id, PreviewStory.class, prevStoryMap);
         return previewSuccess && success;
     }
+
+    /**
+     * 评论故事
+     * @param comment
+     * @return
+     */
+    public boolean comment(Comment comment) {
+        String commentId = writeData.write("friends", "comment", comment);
+        return commentId != null && !"".equals(commentId);
+    }
+
+    /**
+     * 获取故事评论列表
+     * @param pageNo
+     * @param filters
+     * @return
+     */
+    public EntityPage filterPageComment(int pageNo, Map<String, String> filters) throws EntityNotFoundException, DataAssetsNotFoundException, SourceNotFoundException {
+        EntityPage<BaseData> page = readData.filterRead(pageNo, "friends", "comment", filters);
+        return page;
+    }
+
 }
