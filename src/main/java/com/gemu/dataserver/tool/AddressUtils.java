@@ -3,10 +3,12 @@ package com.gemu.dataserver.tool;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 
 /**
  * IP地址获取工具（引用）
@@ -15,8 +17,11 @@ import java.net.URL;
  * @author: <a href="mailto: gemuandyou@163.com">gemu</a><br/>
  */
 public class AddressUtils {
+
+    //============================使用 http://ip.taobao.com/service/getIpInfo.php 获取粗略的地址信息=================================
+
     /**
-     *
+     * 使用pconline的接口获取地址
      * @param content
      *   请求的参数 格式为：name=xxx&pwd=xxx
      * @param encoding
@@ -127,22 +132,21 @@ public class AddressUtils {
     /**
      * unicode 转换成 中文
      *
-     * @author fanhui 2007-3-15
-     * @param theString
+     * @param content
      * @return
      */
-    public static String decodeUnicode(String theString) {
+    public static String decodeUnicode(String content) {
         char aChar;
-        int len = theString.length();
+        int len = content.length();
         StringBuffer outBuffer = new StringBuffer(len);
         for (int x = 0; x < len;) {
-            aChar = theString.charAt(x++);
+            aChar = content.charAt(x++);
             if (aChar == '\\') {
-                aChar = theString.charAt(x++);
+                aChar = content.charAt(x++);
                 if (aChar == 'u') {
                     int value = 0;
                     for (int i = 0; i < 4; i++) {
-                        aChar = theString.charAt(x++);
+                        aChar = content.charAt(x++);
                         switch (aChar) {
                             case '0':
                             case '1':
@@ -197,8 +201,64 @@ public class AddressUtils {
         return outBuffer.toString();
     }
 
-//    public static void main(String[] args) throws UnsupportedEncodingException {
-//        String addresses = AddressUtils.getAddresses("ip=100.38.41.188", "utf-8");
-//        System.out.println(addresses);
-//    }
+    //============================使用 http://api.map.baidu.com/location/ip?ak=xxx&ip=xxx获取详细的定位信息
+    // (http://lbsyun.baidu.com/index.php?title=webapi)
+
+    private static final String ak = "qvPkZhNg43b2igXGMjqaUIWAegkYwApp";
+
+    /**
+     * 根据百度地图获取具体定位
+     * @param ip
+     * @return
+     */
+    public static String getLocation(String ip) {
+        String url = "http://api.map.baidu.com/location/ip?ak=" + ak + "&ip=" + ip;
+        StringBuffer sb = new StringBuffer();
+        InputStream in = null;
+        BufferedReader rd = null;
+        try {
+            in = new URL(url).openStream();
+            rd = new BufferedReader(new InputStreamReader(in, Charset.forName("UTF-8")));
+            int cp;
+            while ((cp = rd.read()) != -1) {
+                sb.append((char) cp);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rd != null) rd.close();
+                if (in != null) in.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return decodeUnicode(sb.toString());
+    }
+
+
+    public static void main(String[] args) throws Exception {
+        String url = "https://tcc.taobao.com/cc/json/mobile_tel_segment.htm?tel=13845175863";
+        StringBuffer sb = new StringBuffer();
+        InputStream in = null;
+        BufferedReader rd = null;
+        try {
+            in = new URL(url).openStream();
+            rd = new BufferedReader(new InputStreamReader(in, Charset.forName("GBK")));
+            int cp;
+            while ((cp = rd.read()) != -1) {
+                sb.append((char) cp);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rd != null) rd.close();
+                if (in != null) in.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println(sb.toString());
+    }
 }
